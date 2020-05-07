@@ -15,8 +15,15 @@ This repo contains code developed as a part of the [Node JS Master class](https:
 
 ### Pizza Delivery Company App
 
+> All related .data folders are with the `p` prefix   
+> All related handlers are in the file `lib/api.js`
+
 #### Users API
-- POST   
+
+Authentication via token is required for all Users APIs
+
+- **POST**   
+  `name`, `email`, `address`, `password` all fields are mandatory
   ```shell
   curl --location --request POST 'localhost:3000/pizza/users/' \
   --header 'Content-Type: application/json' \
@@ -27,12 +34,14 @@ This repo contains code developed as a part of the [Node JS Master class](https:
   	"password": "mypassword"
   }'
   ```
-- GET
+- **GET**   
+  `email` in query parameters is mandatory
   ```shell
   curl --location --request GET 'localhost:3000/pizza/users/?email=prathamesh1729@gmail.com' \
   --header 'token: ccmzek5juiis92kp7d70'
   ```
-- PUT   
+- **PUT**   
+  `name`, `email`, `address`, `password` at least one of these fields must be present along with `email` which is mandatory
   ```shell
   curl --location --request PUT 'localhost:3000/pizza/users/' \
   --header 'token: ccmzek5juiis92kp7d70' \
@@ -42,14 +51,16 @@ This repo contains code developed as a part of the [Node JS Master class](https:
   	"address": "25 Cuffe Parade, Mumbai - 40001, MH, IN"
   }'
   ```
-- DELETE   
+- **DELETE**    
+  `email` in query parameters is mandatory
   ```shell
   curl --location --request DELETE 'localhost:3000/pizza/users/?email=prathamesh1729@gmail.com' \
   --header 'token: ccmzek5juiis92kp7d70'
   ```
 
 #### Tokens API
-- POST (login)  
+- **POST** (login)  
+  Both `email` and `password` are mandatory
   ```shell
   curl --location --request POST 'localhost:3000/pizza/tokens/' \
   --header 'Content-Type: application/json' \
@@ -58,15 +69,17 @@ This repo contains code developed as a part of the [Node JS Master class](https:
   	"password": "mypassword"
   }'
   ```
-- DELETE (logout)  
-```shell
-curl --location --request DELETE 'localhost:3000/pizza/tokens/?id=ccmzek5juiis92kp7d70'
-```
+- **DELETE** (logout)  
+  `id` is mandatory which is the token id received upon login
+  ```shell
+  curl --location --request DELETE 'localhost:3000/pizza/tokens/?id=ccmzek5juiis92kp7d70'
+  ```
 - ~~PUT~~ (not implemented)
 - ~~GET~~ (not implemented)
 
 #### Menu Items API
-- GET   
+- **GET**    
+  Only authenticated users can access the menu
   ```shell
   curl --location --request GET 'localhost:3000/pizza/menu/' \
   --header 'token: ccmzek5juiis92kp7d70'
@@ -110,7 +123,12 @@ curl --location --request DELETE 'localhost:3000/pizza/tokens/?id=ccmzek5juiis92
 > NOTE: The item id is required in the Cart APIs to add & delete items from cart
 
 #### Cart API
-- POST (add a cart item)     
+
+Authentication via token is required for all Cart APIs
+
+- **POST** (add a cart item)     
+  `id` is mandatory which is the item id received in the Menu API response   
+  `quantity` is an optional field. If not present by default it will add that item by 1
   ```shell
   # Adds an item to the cart with quantity 1.
   # If quantity is specified, it increments by that quantity in the cart
@@ -121,7 +139,9 @@ curl --location --request DELETE 'localhost:3000/pizza/tokens/?id=ccmzek5juiis92
   	"id": "5"
   }'
   ```     
-- PUT (modify a cart item)     
+- **PUT** (modify a cart item)     
+  `id` is mandatory which is the item id received in the Menu API response   
+  `quantity` is also mandatory
   ```shell
   curl --location --request PUT 'localhost:3000/pizza/cart/' \
   --header 'token: ccmzek5juiis92kp7d70' \
@@ -131,12 +151,14 @@ curl --location --request DELETE 'localhost:3000/pizza/tokens/?id=ccmzek5juiis92
   	"quantity": 1
   }'
   ```    
-- GET (current cart items)   
+- **GET** (current cart items)   
   ```shell
   curl --location --request GET 'localhost:3000/pizza/cart/' \
   --header 'token: ccmzek5juiis92kp7d70'
   ```
-- DELETE (delete a cart item)
+- **DELETE** (delete a cart item)  
+  `id` is optional. If present, that particular item is removed from the cart  
+  If not present, the entire cart is cleared
   ```shell
   # If id is specified, removes the item specified by the id from the cart
   # If id is not specified, empties the entire cart
@@ -144,8 +166,15 @@ curl --location --request DELETE 'localhost:3000/pizza/tokens/?id=ccmzek5juiis92
   --header 'token: ccmzek5juiis92kp7d70' \
   --data-raw ''
   ```
+
+
 #### Orders API
-- POST (create a new order from current cart & pay)  
+
+Authentication via token is required for all Orders APIs
+
+- **POST** (create a new order from current cart & pay)  
+  This API creates a new order from existing items in cart (and the cart is emptied).  
+  If the payment is successful, order is marked as paid & email is sent to the user
   ```shell
   curl --location --request POST 'localhost:3000/pizza/orders/' \
   --header 'token: ccmzek5juiis92kp7d70' \
